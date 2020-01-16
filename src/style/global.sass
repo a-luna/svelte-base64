@@ -1,0 +1,243 @@
+@charset "utf-8"
+@import "./variables.sass"
+@import "./bulma.sass"
+
+// your global styles
+*, *::before, *::after
+  box-sizing: content-box
+
+html, body
+  background-color: #444;
+  position: relative
+  width: 100%
+  height: 100%
+
+html
+  font-size: 10px
+  -webkit-font-smoothing: antialiased
+  text-rendering: optimizeLegibility
+
+body
+  font-family: "Roboto", Helvetica, Arial, sans-serif
+  font-size: 1.4rem
+  font-weight: 400
+  line-height: normal
+  color: #d8d8d8
+  margin: 0
+  padding: 8px
+  box-sizing: border-box
+
+label
+  display: block
+
+input, button, select, textarea
+  font-family: inherit
+  font-size: inherit
+  padding: 0.4em
+  margin: 0 0 0.5em 0
+  box-sizing: border-box
+  border: 1px solid #ccc
+  border-radius: 2px
+
+.field.has-addons
+  width: 100%
+
+.input-text .input
+  border-color: #08d2b4
+
+.encoded-text .input
+  border-color: #5ef04b
+
+.input-text .input,
+.encoded-text .input
+  font-size: 1.2rem
+  color: #f2f2f2
+  background-color: #202020
+  margin: 0
+
+.input-text .button,
+.encoded-text .button
+  font-size: 1.2rem
+  font-weight: 700
+  color: #202020
+  margin: 0
+
+.form-title-buttons .button
+  font-size: 1.2rem
+  font-weight: 700
+  color: #202020;
+  margin: 0 3px
+  padding: 0 7px
+  height: 22px
+
+.button.is-primary,
+.button.blue
+  background-color: #08d2b4
+  border: 1px solid #08d2b4
+
+.button.is-primary:hover,
+.button.is-primary:active,
+.button.is-primary:focus,
+.button.is-primary:active:hover,
+.button.blue:hover,
+.button.blue:active,
+.button.blue:focus,
+.button.blue:active:hover
+  color: #202020
+  background-color: #19f6d6
+  border: 1px solid #19f6d6
+
+.button.green
+  background-color: #5ef04b
+  border: 1px solid #5ef04b
+
+.button.green:hover,
+.button.green:active,
+.button.green:focus,
+.button.green:active:hover
+  color: #202020
+  background-color: #7fff6e
+  border: 1px solid #7fff6e
+
+.button.is-danger
+  background-color: #f92672
+  border: 1px solid #f92672
+
+.button.is-danger:hover,
+.button.is-danger:active,
+.button.is-danger:focus,
+.button.is-danger:active:hover
+  color: #202020
+  background-color: #ff0560
+
+.button.reset
+  color: #202020
+  background-color: #f60ef2
+  border: 1px solid #f60ef2
+
+.button.reset:hover,
+.button.reset:active,
+.button.reset:focus,
+.button.reset:active:hover
+  color: #202020
+  background-color: #fa72f8
+  border: 1px solid #fa72f8
+
+.is-danger.input, .is-danger.textarea
+    border-color: #f92672
+
+code, pre
+  font-family: "Roboto Mono", monospace
+  font-size: inherit
+  background-color: inherit
+  color: inherit
+  padding: 0
+  -webkit-font-smoothing: antialiased
+
+.media-content
+  font-size: 16px
+  color: #363636
+
+.modal-card-title
+  font-size: 24px
+
+.modal-card-foot .button
+  font-size: 16px
+  margin: 0
+
+.hide-element
+  display: none
+
+.responsive
+  overflow-x: auto
+  overflow-y: hidden
+  width: auto
+  margin: auto
+
+.bit-group
+  background-color: #202020
+  transition: background-color 0.35s ease-in-out
+
+.highlight-bit-group, .highlight-ascii, .highlight-base64
+  background-color: #777777
+  transition: background-color 0.35s ease-in-out
+
+
+.hex-map .hex-byte.highlight-ascii code[data-ascii="ws"].hex-ascii,
+.hex-map .hex-byte.highlight-bit-group code[data-ascii="ws"].hex-ascii,
+.base64 code.base64-binary.highlight-base64 span[data-bit-group="pad"].black,
+.base64 code.base64-binary.highlight-bit-group span[data-bit-group="pad"].black
+  color: #777777
+  transition: color 0.35s ease-in-out
+
+#input-encoding, #output-base64-encoding
+  flex: 1 0 45%
+
+.blue
+  color: #19f6d6
+
+.green
+  color: #7fff6e
+
+.my-button
+  cursor: pointer
+  font-size: 13px
+  color: #252525
+  background-color: #f2f2f2
+  line-height: 20px
+  margin: 2px 3px
+  padding: 3px 5px
+  box-sizing: border-box
+  border: 1px solid #c4c4c4
+  border-radius: 2px
+
+textarea[autoresize]
+  display: block
+  overflow: hidden
+  resize: none
+
+@media screen and (max-width: 720px)
+  #encode-form .radio-buttons, #decode-form .radio-buttons
+    flex-flow: column nowrap
+
+@media screen and (max-width: 660px)
+  .form-title-buttons .button
+    font-size: 1.1rem
+    padding: 0 3px;
+
+@media screen and (max-width: 600px)
+  #encode-form .radio-buttons, #decode-form .radio-buttons
+    flex-flow: row wrap
+    justify-content: space-evenly
+  .form-title-buttons .button
+    font-size: 1.2rem
+    padding: 0 7px;
+
+@media screen and (max-width: 475px)
+  #encode-form fieldset, #decode-form fieldset
+    font-size: 1.3rem
+
+@media screen and (max-width: 452px)
+  #input-encoding
+    flex: 1 0 38%;
+
+  #output-base64-encoding
+    flex: 1 0 52%
+
+@media screen and (max-width: 400px)
+  #input-encoding, #output-base64-encoding
+    flex: 1 0 45%
+    margin: 5px 0
+
+  #input-base64-encoding
+    margin: 5px 0
+
+  .form-title-buttons .button
+    font-size: 1.15rem
+    padding: 0 5px
+
+  #encode-form .radio-buttons, #decode-form .radio-buttons
+    flex-flow: column nowrap
+
+  #encode-form fieldset, #encode-form fieldset
+    width: auto

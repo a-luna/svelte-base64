@@ -1,0 +1,9 @@
+{
+  "workbench.colorTheme": "Comfy Monokai(Italic)",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.detectIndentation": false,
+  "git.ignoreLimitWarning": true,
+  "workbench.iconTheme": "vscode-icons"
+}
