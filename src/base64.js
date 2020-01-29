@@ -58,8 +58,8 @@ export function getBase64Map(base64Encoding) {
   })
   base64Map.push({
     b64: "=",
-    bin: "000000",
-    dec: "N/A",
+    bin: "------",
+    dec: "--",
   })
   return makeChunkedList(base64Map, 26)
 }
@@ -86,9 +86,12 @@ export function validateEncodeFormData(inputText, inputEncoding, base64Encoding)
   if (inputEncoding == "Hex" && /^0x\w+$/.test(inputText)) {
     inputText = inputText.replace(/0x/, "")
   }
-  let { success, error, inputBytes } = validateTextEncoding(inputText, inputEncoding)
-  if (!success) {
-    return [{ success: false, error: error }, {}]
+  let { inputIsValid, errorMessage, inputBytes } = validateTextEncoding(
+    inputText,
+    inputEncoding
+  )
+  if (!inputIsValid) {
+    return [{ inputIsValid: false, errorMessage: errorMessage }, {}]
   }
   const totalBytes = inputBytes.length
   let totalChunks = (totalBytes / 3) | 0
@@ -111,7 +114,7 @@ export function validateEncodeFormData(inputText, inputEncoding, base64Encoding)
     lastChunkLength: lastChunkLength,
     padLength: padLength,
   }
-  return [{ success: true, error: "" }, inputData]
+  return [{ inputIsValid: true, errorMessage: "" }, inputData]
 
   function validateTextEncoding(input, encoding) {
     if (encoding === "ASCII") {
@@ -132,7 +135,7 @@ export function validateEncodeFormData(inputText, inputEncoding, base64Encoding)
       success = true
       inputBytes = stringToByteArray(inputText)
     }
-    return { success: success, error: error, inputBytes: inputBytes }
+    return { inputIsValid: success, errorMessage: error, inputBytes: inputBytes }
   }
 
   function validateStringIsHex(input) {
@@ -149,7 +152,7 @@ export function validateEncodeFormData(inputText, inputEncoding, base64Encoding)
       success = true
       inputBytes = hexStringToByteArray(inputText)
     }
-    return { success: success, error: error, inputBytes: inputBytes }
+    return { inputIsValid: success, errorMessage: error, inputBytes: inputBytes }
   }
 }
 
@@ -371,8 +374,8 @@ export function validateDecodeFormData(encodedText, base64Encoding) {
 }
 
 function getBase64Alphabet(base64Encoding) {
-  let common = B64_ALPHABET_COMMON
-  return base64Encoding === "base64" ? (common += "+/") : (common += "-_")
+  let b64Alphabet = B64_ALPHABET_COMMON
+  return base64Encoding === "base64" ? (b64Alphabet += "+/") : (b64Alphabet += "-_")
 }
 
 export function b64Decode({

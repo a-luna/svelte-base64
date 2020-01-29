@@ -1,9 +1,51 @@
 <script>
-  import { getAsciiPrintableMap, getBase64Map } from "../helpers/base64.js"
-  export let base64Encoding = "base64url"
+  import { onMount } from "svelte"
+  import { getAsciiPrintableMap, getBase64Map } from "../base64.js"
+
+  let showEncodeForm
+  let outputBase64Encoding
+  let inputBase64Encoding
   const asciiMapChunked = getAsciiPrintableMap()
+
+  onMount(() => {
+    showEncodeForm = true
+    outputBase64Encoding = "base64url"
+    inputBase64Encoding = "base64url"
+  })
+
+  $: base64Encoding =
+    showEncodeForm
+      ? outputBase64Encoding
+      : inputBase64Encoding
+
   $: base64MapChunked = getBase64Map(base64Encoding)
-  $: b64AlphabetDetail = base64Encoding == "base64" ? "Standard" : "URL and Filename safe"
+
+  $: b64AlphabetDetail =
+    base64Encoding == "base64"
+      ? "Standard"
+      : "URL and Filename safe"
+
+  export function handleFormToggled(encodeFormToggled) {
+    reset()
+    showEncodeForm = encodeFormToggled
+  }
+
+  export function reset() {
+    outputBase64Encoding = "base64url"
+    inputBase64Encoding = "base64url"
+  }
+
+  export function handleOutputBase64EncodingChanged(event) {
+    if (showEncodeForm) {
+      outputBase64Encoding = event.detail.value
+    }
+  }
+
+  export function handleInputBase64EncodingChanged(event) {
+    if (!showEncodeForm) {
+      inputBase64Encoding = event.detail.value
+    }
+  }
 </script>
 
 <style>
@@ -52,10 +94,7 @@
     justify-content: flex-end;
   }
   .ascii-lookup code {
-    color: #ffb86c;
-  }
-  .base64-lookup code {
-    color: #96d7f7;
+    color: #fa72f8;
   }
   .ascii-lookup code,
   .base64-lookup code {
@@ -118,7 +157,11 @@
   </div>
   <div class="table-wrapper">
     <h2>Base64 Alphabet ({b64AlphabetDetail})</h2>
-    <div class="base64-lookup-table">
+    <div
+      class="base64-lookup-table"
+      class:blue={showEncodeForm}
+      class:green={!showEncodeForm}
+    >
       {#each base64MapChunked as base64Map}
         <div class="base64-lookup-chunk">
           {#each base64Map as base64}

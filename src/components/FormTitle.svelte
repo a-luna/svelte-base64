@@ -1,21 +1,18 @@
 <script>
   import Button from "svelma/src/components/Button.svelte"
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, onMount } from "svelte"
+
   const dispatch = createEventDispatcher()
-  let showEncodeForm = true
   let formTitle = "Encode Text/Data"
-  let toggleButtonSelector = ".form-title-buttons .button:first-child"
+  let showEncodeForm = true
 
-  function toggleEncodeForm(event) {
-    formTitle = "Encode Text/Data"
-    showEncodeForm = true
-    dispatch("formToggled", { showEncodeForm: true })
-  }
-
-  function toggleDecodeForm(event) {
-    formTitle = "Decode Base64"
-    showEncodeForm = false
-    dispatch("formToggled", { showEncodeForm: false })
+  function toggleForm(event) {
+    showEncodeForm = !showEncodeForm
+    formTitle =
+      showEncodeForm
+        ? "Encode Text/Data"
+        : "Decode Base64"
+    dispatch("formToggled", { value: showEncodeForm })
   }
 </script>
 
@@ -26,7 +23,7 @@
     justify-content: space-between;
     align-items: center;
     line-height: 30px;
-    margin: 0 0 5px;
+    margin: 0 0 10px;
   }
   .form-title {
     flex: 0 0 auto;
@@ -35,54 +32,55 @@
     text-align: center;
     letter-spacing: 0.5px;
     cursor: pointer;
-    margin: 0 auto;
+    margin: 0 5px 0 0;
   }
   .form-title-buttons {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end;
   }
-  @media screen and (max-width: 660px) {
-    .form-title {
-      font-size: 1.75rem;
-    }
-  }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 670px) {
     .form-title-wrapper {
-      margin: 5px 0 0 0;
+      flex-flow: row nowrap;
+      justify-content: space-evenly;
+      align-items: center;
+      line-height: 30px;
+      margin: 0 0 10px;
+    }
+    .form-title {
+      font-size: 2.8rem;
+      font-weight: 400;
+      margin: 0 auto;
     }
     .form-title-buttons {
       margin: 0 auto;
     }
-    .form-title {
-      font-size: 2.2rem;
-      font-weight: 400;
-    }
   }
-  @media screen and (max-width: 452px) {
-    .form-title {
-      font-size: 2rem;
-      font-weight: 400;
+  @media screen and (max-width: 600px) {
+    .form-title-wrapper {
+      flex-flow: column nowrap;
     }
-  }
-  @media screen and (max-width: 400px) {
     .form-title {
-      font-size: 1.65rem;
-      font-weight: 400;
+      margin: 0 auto 15px auto;
     }
   }
 </style>
 
 <div class="form-title-wrapper">
-  <div class="form-title" class:blue={showEncodeForm} class:green={!showEncodeForm}>
+  <div
+    class="form-title"
+    class:blue={showEncodeForm}
+    class:green={!showEncodeForm}
+    on:click={toggleForm}
+  >
     {formTitle}
   </div>
   <div class="form-title-buttons">
     {#if showEncodeForm}
-      <Button type="blue" on:click={toggleDecodeForm}>Switch Mode</Button>
+      <Button type="blue" on:click={toggleForm}>Switch Mode</Button>
     {:else}
-      <Button type="green" on:click={toggleEncodeForm}>Switch Mode</Button>
+      <Button type="green" on:click={toggleForm}>Switch Mode</Button>
     {/if}
-    <Button type="reset" on:click={() => dispatch('resetForm')}>Reset</Button>
+    <Button type="reset" on:click={() => dispatch("resetForm")}>Reset</Button>
   </div>
 </div>

@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from "svelte"
   import { alert } from "svelma/src/components/Dialog/index.js"
   import FormTitle from "./FormTitle.svelte"
   import EncodeForm from "./EncodeForm.svelte"
@@ -7,171 +8,83 @@
   import Visualization from "./Visualization.svelte"
   import LookupTables from "./LookupTables.svelte"
 
-  export let showEncodeForm = true
-  let plainInputText = ""
-  let encodedInputText = ""
-  let outputEncodedText = ""
-  let outputDecodedText = ""
-  let plainInputTextSelector = ".input-text input"
-  let encodedInputTextSelector = ".encoded-text input"
-  let submitEncodeFormButtonSelector = ".input-text button"
-  let submitDecodeFormButtonSelector = ".encoded-text button"
-  let formOptions = {
-    inputTextEncoding: "ASCII",
-    inputBase64Encoding: "base64url",
-    outputBase64Encoding: "base64url",
-  }
-  let results = {}
-  let totalBytesIn = 0
-  let totalBytesOut = 0
-  let isASCII = true
-  let chunks = []
-
-  $: inputText = showEncodeForm ? plainInputText : encodedInputText
-  $: outputText = showEncodeForm ? outputEncodedText : outputDecodedText
-  $: totalBytesIn =
-    formOptions.inputTextEncoding == "ASCII"
-      ? plainInputText.length
-      : getHexBytes(plainInputText)
-  $: inputEncoding = showEncodeForm
-    ? formOptions.inputTextEncoding
-    : formOptions.inputBase64Encoding
-  $: base64Encoding = showEncodeForm
-    ? formOptions.outputBase64Encoding
-    : formOptions.inputBase64Encoding
-  $: outputEncoding = showEncodeForm
-    ? formOptions.outputBase64Encoding
-    : isASCII
-    ? "ASCII"
-    : "Hex"
-  $: results = {
-    showEncodeForm: showEncodeForm,
-    inputText: inputText,
-    inputEncoding: inputEncoding,
-    totalBytesIn: totalBytesIn,
-    outputText: outputText,
-    outputEncoding: outputEncoding,
-    totalBytesOut: totalBytesOut,
-    isASCII: isASCII,
-  }
+  let showEncodeForm = true
+  let encodeForm
+  let decodeForm
+  let results
+  let lookuptables
+  let visualization
 
   function formToggled(event) {
-    clearLastResult()
-    showEncodeForm = event.detail.showEncodeForm
-    encodedInputText = ""
-    plainInputText = ""
+    showEncodeForm = event.detail.value
+    results.handleFormToggled(showEncodeForm)
+    lookuptables.handleFormToggled(showEncodeForm)
+    visualization.handleFormToggled(showEncodeForm)
   }
 
   function resetForm() {
-    clearLastResult()
-    encodedInputText = ""
-    plainInputText = ""
     if (showEncodeForm) {
-      document.querySelector(plainInputTextSelector).value = ""
+      encodeForm.reset()
     } else {
-      document.querySelector(encodedInputTextSelector).value = ""
+      decodeForm.reset()
     }
+    results.reset()
+    lookuptables.reset()
+    visualization.reset()
   }
 
-  function toggleInputStyle(inputIsValid) {
-    let plainInputTextElement = document.querySelector(plainInputTextSelector)
-    if (plainInputTextElement) {
-      plainInputTextElement.classList.toggle("is-primary", inputIsValid)
-      plainInputTextElement.classList.toggle("is-danger", !inputIsValid)
-    }
-    let submitEncodeFormButton = document.querySelector(submitEncodeFormButtonSelector)
-    if (submitEncodeFormButton) {
-      submitEncodeFormButton.classList.toggle("is-primary", inputIsValid)
-      submitEncodeFormButton.classList.toggle("is-danger", !inputIsValid)
-    }
-    let encodedInputTextElement = document.querySelector(encodedInputTextSelector)
-    if (encodedInputTextElement) {
-      encodedInputTextElement.classList.toggle("is-primary", inputIsValid)
-      encodedInputTextElement.classList.toggle("is-danger", !inputIsValid)
-    }
-    let submitDecodeFormButton = document.querySelector(submitDecodeFormButtonSelector)
-    if (submitDecodeFormButton) {
-      submitDecodeFormButton.classList.toggle("is-primary", inputIsValid)
-      submitDecodeFormButton.classList.toggle("is-danger", !inputIsValid)
-    }
+  function plainTextChanged(event) {
+    results.handlePlainTextChanged(event)
+    visualization.reset()
   }
 
-  function formOptionChanged(event) {
-    clearLastResult()
-    const setting = event.detail.setting
-    const value = event.detail.value
-    formOptions[setting] = value
+  function encodedTextChanged(event) {
+    results.handleEncodedTextChanged(event)
+    visualization.reset()
   }
 
-  function clearLastResult() {
-    toggleInputStyle(true)
-    outputEncodedText = ""
-    outputDecodedText = ""
-    totalBytesOut = 0
-    isASCII = true
-    chunks = []
+  function plainTextEncodingChanged(event) {
+    results.handlePlainTextEncodingChanged(event)
+    visualization.handlePlainTextEncodingChanged(event)
   }
 
-  function encodeFormSubmitted(event) {
-    let { success, error, encodedData } = event.detail
-    toggleInputStyle(success)
-    if (success) {
-      chunks = encodedData.chunks
-      outputEncodedText = encodedData.outputText
-      isASCII = encodedData.isASCII
-    } else {
-      alert({
-        message: error,
-        title: "Error!",
-        type: "is-danger",
-      }).then(focusOnElement(plainInputTextSelector))
-    }
+  function outputBase64EncodingChanged(event) {
+    results.handleOutputBase64EncodingChanged(event)
+    lookuptables.handleOutputBase64EncodingChanged(event)
   }
 
-  function decodeFormSubmitted(event) {
-    let { success, error, decodedData } = event.detail
-    toggleInputStyle(success)
-    if (success) {
-      chunks = decodedData.chunks
-      outputDecodedText = decodedData.outputText
-      totalBytesOut = decodedData.totalBytesOutput
-      isASCII = decodedData.isASCII
-    } else {
-      alert({
-        message: error,
-        title: "Error!",
-        type: "is-danger",
-      }).then(focusOnElement(encodedInputTextSelector))
-    }
+  function inputBase64EncodingChanged(event) {
+    results.handleInputBase64EncodingChanged(event)
+    lookuptables.handleInputBase64EncodingChanged(event)
   }
 
-  function focusOnElement(selector) {
-    const element = document.querySelector(selector)
-    if (element) {
-      element.focus()
-    }
+  function encodingSucceeded(event) {
+    let { outputText, chunks } = event.detail
+    results.handleOutputEncodedTextChanged(outputText)
+    visualization.update(chunks)
   }
 
-  function plainInputTextChanged(event) {
-    clearLastResult()
-    plainInputText = event.detail.plainInputText
+  function decodingSucceeded(event) {
+    let { outputText, chunks, totalBytesOutput, isASCII } = event.detail
+    results.handleOutputDecodedTextChanged(outputText)
+    results.handleTotalBytesOutChanged(totalBytesOutput)
+    results.handleOutputIsAsciiChanged(isASCII)
+    visualization.handleOutputIsAsciiChanged(isASCII)
+    visualization.update(chunks)
   }
 
-  function getHexBytes(hexString) {
-    return ignoreHexStringPrefix(hexString).length / 2
-  }
-
-  function ignoreHexStringPrefix(hexString) {
-    // Remove 0x from beginning of string since this is a valid hex format
-    if (/^0x\w+$/.test(hexString)) {
-      hexString = hexString.replace(/0x/, "")
-    }
-    return hexString
-  }
-
-  function encodedInputTextChanged(event) {
-    clearLastResult()
-    encodedInputText = event.detail.encodedInputText
+  function errorOccurred(event) {
+    alert({
+      message: event.detail.error,
+      title: "Error!",
+      type: "is-danger",
+    }).then(() => {
+      if (showEncodeForm) {
+        encodeForm.focus()
+      } else {
+        decodeForm.focus()
+      }
+    })
   }
 </script>
 
@@ -190,12 +103,7 @@
     margin: 0 15px auto 0;
     flex: 0 0 340px;
   }
-  @media screen and (max-width: 660px) {
-    .form-group {
-      flex: 0 0 53%;
-    }
-  }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 670px) {
     .main-form {
       flex-flow: row wrap;
     }
@@ -211,20 +119,30 @@
 
 <div class="main-form">
   <div class="form-group">
-    <FormTitle on:formToggled={formToggled} on:resetForm={resetForm} />
+    <FormTitle
+      on:formToggled={formToggled}
+      on:resetForm={resetForm}
+    />
     {#if showEncodeForm}
       <EncodeForm
-        on:formOptionChanged={formOptionChanged}
-        on:plainInputTextChanged={plainInputTextChanged}
-        on:encodeFormSubmitted={encodeFormSubmitted} />
+        bind:this={encodeForm}
+        on:plainTextChanged={plainTextChanged}
+        on:plainTextEncodingChanged={plainTextEncodingChanged}
+        on:outputEncodingChanged={outputBase64EncodingChanged}
+        on:encodingSucceeded={encodingSucceeded}
+        on:errorOccurred={errorOccurred}
+      />
     {:else}
       <DecodeForm
-        on:formOptionChanged={formOptionChanged}
-        on:encodedInputTextChanged={encodedInputTextChanged}
-        on:decodeFormSubmitted={decodeFormSubmitted} />
+        bind:this={decodeForm}
+        on:encodedTextChanged={encodedTextChanged}
+        on:inputEncodingChanged={inputBase64EncodingChanged}
+        on:decodingSucceeded={decodingSucceeded}
+        on:errorOccurred={errorOccurred}
+      />
     {/if}
   </div>
-  <FormResults {...results} />
+  <FormResults bind:this={results} />
 </div>
-<Visualization {chunks} {isASCII} />
-<LookupTables {base64Encoding} />
+<Visualization bind:this={visualization} />
+<LookupTables bind:this={lookuptables} />

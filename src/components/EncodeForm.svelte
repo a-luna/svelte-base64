@@ -1,66 +1,75 @@
 <script>
-  import RadioButtons from "./RadioButtons.svelte"
+  import { createEventDispatcher, onMount } from "svelte"
+  import { validateEncodeFormData, b64Encode } from "../base64.js"
   import Field from "svelma/src/components/Field.svelte"
   import Input from "svelma/src/components/Input.svelte"
   import Button from "svelma/src/components/Button.svelte"
-  import { validateEncodeFormData, b64Encode } from "../helpers/base64.js"
-  import { createEventDispatcher, onMount } from "svelte"
+  import RadioButtons from "./RadioButtons.svelte"
+
   const dispatch = createEventDispatcher()
-
-  let inputTextEncoding = "ASCII"
+  let plainTextEncoding = "ASCII"
   let outputBase64Encoding = "base64url"
-  let plainInputTextSelector = ".input-text input"
+  let errorMessage = ""
+  let inputData = {}
+  let inputType = ""
+  let buttonType = "blue"
+  let plainTextBinding = ""
+  let plainText = ""
+  let inputIsValid = true
+  let textBox
 
-  onMount(() => {
-    document.querySelector(plainInputTextSelector)
-    addEventListener("keyup", handlePlainTextInputChanged)
-  })
+  $: plainTextChanged(plainTextBinding)
 
-  function handlePlainTextInputChanged(event) {
+  export const focus = () => textBox.focus()
+  export const reset = () => {
+    plainTextBinding = ""
+    plainTextChanged("", true)
+  }
+
+  function handlePlainTextChanged(event) {
+    plainTextChanged(event.target.value)
     if (event.keyCode == 13) {
       submitEncodeForm()
-    } else {
-      plainInputTextChanged(event)
     }
   }
 
-  function plainInputTextChanged(event) {
-    dispatch("plainInputTextChanged", { plainInputText: event.target.value })
+  function plainTextChanged(newValue, formReset=false) {
+    if (formReset || plainText != newValue) {
+      plainText = newValue
+      inputIsValid = true
+      toggleInputStyle()
+      dispatch("plainTextChanged", { value: plainText })
+    }
+  }
+
+  function plainTextEncodingChanged(event) {
+    plainTextEncoding = event.detail.value
+    dispatch("plainTextEncodingChanged", { value: plainTextEncoding })
+  }
+
+  function outputEncodingChanged(event) {
+    outputBase64Encoding = event.detail.value
+    dispatch("outputEncodingChanged", { value: outputBase64Encoding })
   }
 
   function submitEncodeForm() {
-    let plainInputText = document.querySelector(plainInputTextSelector).value
-    let [{ success, error }, inputData] = validateEncodeFormData(
-      plainInputText,
-      inputTextEncoding,
+    ([{ inputIsValid, errorMessage }, inputData] = validateEncodeFormData(
+      plainText,
+      plainTextEncoding,
       outputBase64Encoding
-    )
-    if (success) {
-      let encodedData = b64Encode(inputData)
-      dispatch("encodeFormSubmitted", {
-        success: true,
-        error: "",
-        encodedData: encodedData,
-      })
+    ))
+    if (inputIsValid) {
+      let { outputText, chunks } = b64Encode(inputData)
+      dispatch("encodingSucceeded", { outputText: outputText, chunks: chunks, })
     } else {
-      dispatch("encodeFormSubmitted", { success: false, error: error, encodedData: {} })
+      dispatch("errorOccurred", { error: errorMessage })
     }
+    toggleInputStyle()
   }
 
-  function inputTextEncodingChanged(event) {
-    inputTextEncoding = event.detail.value
-    dispatch("formOptionChanged", {
-      setting: "inputTextEncoding",
-      value: inputTextEncoding,
-    })
-  }
-
-  function outputBase64EncodingChanged(event) {
-    outputBase64Encoding = event.detail.value
-    dispatch("formOptionChanged", {
-      setting: "outputBase64Encoding",
-      value: outputBase64Encoding,
-    })
+  function toggleInputStyle() {
+    inputType = inputIsValid ? "" : "is-danger"
+    buttonType = inputIsValid ? "blue" : "is-danger"
   }
 
   const inputEncodingButtons = {
@@ -110,7 +119,7 @@
   #encode-form {
     display: flex;
     flex-flow: column nowrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
     min-height: 120px;
   }
   #encode-form {
@@ -121,32 +130,18 @@
     flex-flow: row nowrap;
     justify-content: space-evenly;
     align-items: baseline;
-    margin: auto 0 20px 0;
+    margin: 0 0 15px;
   }
   .form-input {
     display: flex;
     flex-flow: row nowrap;
   }
-  @media screen and (max-width: 660px) {
-    .form-input {
-      flex-flow: row wrap;
-      justify-content: flex-end;
-    }
-  }
-  @media screen and (max-width: 600px) {
-    .form-options {
-      margin: auto 0;
-    }
+  @media screen and (max-width: 670px) {
     #encode-form {
       min-height: 110px;
     }
-    .form-input {
-      margin: 5px 0 0 0;
-    }
-  }
-  @media screen and (max-width: 400px) {
     .form-options {
-      flex-flow: row nowrap;
+      flex-flow: row wrap;
       justify-content: center;
     }
   }
@@ -156,17 +151,28 @@
   <div class="form-options">
     <RadioButtons
       {...inputEncodingButtons}
-      on:selectionChanged={inputTextEncodingChanged} />
+      on:selectionChanged={plainTextEncodingChanged} />
     <RadioButtons
       {...outputEncodingButtons}
-      on:selectionChanged={outputBase64EncodingChanged} />
+      on:selectionChanged={outputEncodingChanged} />
   </div>
   <div class="form-input input-text">
-    <Field>
-      <Input expanded />
-      <p class="control">
-        <Button type="blue" on:click={submitEncodeForm}>Encode</Button>
-      </p>
-    </Field>
+    <div class:is-danger={!inputIsValid} class="field has-addons">
+      <div class="control is-expanded">
+        <input
+          bind:this={textBox}
+          bind:value={plainTextBinding}
+          on:input={handlePlainTextChanged}
+          expanded="true"
+          type="text"
+          class="input"
+        >
+        <p class="control">
+        <Button type={buttonType} on:click={submitEncodeForm}>
+          Encode
+        </Button>
+        </p>
+      </div>
+    </div>
   </div>
 </div>

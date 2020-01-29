@@ -24,7 +24,6 @@ body
   line-height: normal
   color: #d8d8d8
   margin: 0
-  padding: 8px
   box-sizing: border-box
 
 label
@@ -41,6 +40,13 @@ input, button, select, textarea
 
 .field.has-addons
   width: 100%
+
+.control.is-expanded
+  display: flex
+
+.field.has-addons .control .input
+  border-bottom-right-radius: 0
+  border-top-right-radius: 0
 
 .input-text .input
   border-color: #08d2b4
@@ -59,6 +65,7 @@ input, button, select, textarea
 .encoded-text .button
   font-size: 1.2rem
   font-weight: 700
+  width: 67px;
   color: #202020
   margin: 0
 
@@ -123,8 +130,8 @@ input, button, select, textarea
   background-color: #fa72f8
   border: 1px solid #fa72f8
 
-.is-danger.input, .is-danger.textarea
-    border-color: #f92672
+.is-danger .input, .is-danger .textarea
+  border-color: #f92672
 
 code, pre
   font-family: "Roboto Mono", monospace
@@ -173,6 +180,16 @@ code, pre
 #input-encoding, #output-base64-encoding
   flex: 1 0 45%
 
+#input-encoding fieldset,
+#output-base64-encoding fieldset
+  width: 90%
+
+#input-base64-encoding .radio-buttons
+  flex-flow: row nowrap
+
+#input-base64-encoding .button-wrapper
+  margin: 5px;
+
 .blue
   color: #19f6d6
 
@@ -196,48 +213,37 @@ textarea[autoresize]
   overflow: hidden
   resize: none
 
-@media screen and (max-width: 720px)
-  #encode-form .radio-buttons, #decode-form .radio-buttons
-    flex-flow: column nowrap
-
-@media screen and (max-width: 660px)
-  .form-title-buttons .button
-    font-size: 1.1rem
-    padding: 0 3px;
-
-@media screen and (max-width: 600px)
-  #encode-form .radio-buttons, #decode-form .radio-buttons
-    flex-flow: row wrap
-    justify-content: space-evenly
-  .form-title-buttons .button
-    font-size: 1.2rem
-    padding: 0 7px;
-
-@media screen and (max-width: 475px)
+@media screen and (max-width: 670px)
   #encode-form fieldset, #decode-form fieldset
-    font-size: 1.3rem
+    font-size: 1.6rem
 
-@media screen and (max-width: 452px)
-  #input-encoding
-    flex: 1 0 38%;
+  #input-encoding, #output-base64-encoding
+    flex: 0 1
 
-  #output-base64-encoding
-    flex: 1 0 52%
+  .radio-group
+    margin: 5px
+
+  #input-encoding .radio-buttons,
+  #output-base64-encoding .radio-buttons
+    flex-flow: row nowrap
+
+  #input-encoding .button-wrapper,
+  #output-base64-encoding .button-wrapper
+    margin: 5px
+
+  .input-text .button,
+  .encoded-text .button,
+  .input-text .input,
+  .encoded-text .input
+    font-size: 1.6rem
+
+  .form-title-buttons .button
+    font-size: 1.6rem;
+    padding: 0 10px;
+    height: 35px;
+    margin: 0 10px;
+    width: 120px;
 
 @media screen and (max-width: 400px)
-  #input-encoding, #output-base64-encoding
-    flex: 1 0 45%
-    margin: 5px 0
-
-  #input-base64-encoding
-    margin: 5px 0
-
-  .form-title-buttons .button
-    font-size: 1.15rem
-    padding: 0 5px
-
-  #encode-form .radio-buttons, #decode-form .radio-buttons
-    flex-flow: column nowrap
-
-  #encode-form fieldset, #encode-form fieldset
-    width: auto
+  #input-base64-encoding fieldset
+    min-height: 0

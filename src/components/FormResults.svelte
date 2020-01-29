@@ -1,15 +1,125 @@
 <script>
-  export let showEncodeForm = false
-  export let inputText = ""
-  export let inputEncoding = ""
-  export let totalBytesIn = 0
-  export let outputText = ""
-  export let outputEncoding = ""
-  export let totalBytesOut = 0
-  export let isASCII = true
+  import { createEventDispatcher, onMount } from "svelte"
 
+  let showEncodeForm
   let inputTextArea
+  let inputText
   let outputTextArea
+  let outputText = ""
+  let plainTextEncoding
+  let outputBase64Encoding
+  let inputBase64Encoding
+  let totalBytesOut = 0
+  let outputIsAscii
+
+  onMount(() => {
+    showEncodeForm = true
+    inputText = ""
+    plainTextEncoding = "ASCII"
+    outputBase64Encoding = "base64url"
+    inputBase64Encoding = "base64url"
+    outputIsAscii = true
+  })
+
+  $: totalBytesIn =
+    plainTextEncoding == "ASCII"
+      ? inputText.length
+      : getHexBytes(inputText)
+
+  $: isASCII = showEncodeForm ? plainTextEncoding == "ASCII" : outputIsAscii
+  $: inputEncoding = showEncodeForm ? plainTextEncoding : inputBase64Encoding
+
+  $: outputEncoding =
+    showEncodeForm
+      ? outputBase64Encoding
+      : outputIsAscii
+        ? "ASCII"
+        : "Hex"
+
+  export function handleFormToggled(encodeFormToggled) {
+    reset()
+    showEncodeForm = encodeFormToggled
+  }
+
+  export function reset() {
+    inputText = ""
+    plainTextEncoding = "ASCII"
+    outputBase64Encoding = "base64url"
+    inputBase64Encoding = "base64url"
+    outputText = ""
+    totalBytesOut = 0
+    outputIsAscii = true
+  }
+
+  export function handlePlainTextChanged(event) {
+    clearLastResult()
+    if (showEncodeForm) {
+      inputText = event.detail.value
+    }
+  }
+
+  export function handleEncodedTextChanged(event) {
+    clearLastResult()
+    if (!showEncodeForm) {
+      inputText = event.detail.value
+    }
+  }
+
+  export function handlePlainTextEncodingChanged(event) {
+    clearLastResult()
+    if (showEncodeForm) {
+      plainTextEncoding = event.detail.value
+    }
+  }
+
+  export function handleOutputBase64EncodingChanged(event) {
+    clearLastResult()
+    if (showEncodeForm) {
+      outputBase64Encoding = event.detail.value
+    }
+  }
+
+  export function handleInputBase64EncodingChanged(event) {
+    clearLastResult()
+    if (!showEncodeForm) {
+      inputBase64Encoding = event.detail.value
+    }
+  }
+
+  export function handleOutputEncodedTextChanged(outputEncodedText) {
+    if (showEncodeForm) {
+      outputText = outputEncodedText
+    }
+  }
+
+  export function handleOutputDecodedTextChanged(outputDecodedText) {
+    if (!showEncodeForm) {
+      outputText = outputDecodedText
+    }
+  }
+
+  export const handleTotalBytesOutChanged =
+    totalBytesDecodedOut => totalBytesOut = totalBytesDecodedOut
+
+  export function handleOutputIsAsciiChanged(isASCII) {
+    if (!showEncodeForm) {
+      outputIsAscii = isASCII
+    }
+  }
+
+  function clearLastResult() {
+    outputText = ""
+    totalBytesOut = 0
+  }
+
+  function getHexBytes(hexString) {
+    if (!hexString) return 0
+    // Remove 0x from beginning of string since this is a valid hex format
+    if (/^0x\w+$/.test(hexString)) {
+      hexString = hexString.replace(/0x/, "")
+    }
+    return hexString.length / 2
+  }
 
   async function copyInputText() {
     await copyText(inputText, inputTextArea)
@@ -100,21 +210,25 @@
   .byte-length {
     margin: 2px 5px;
   }
-  @media screen and (max-width: 660px) {
-    .results-wrapper {
-      flex: 0 0 42%;
-    }
-  }
-  @media screen and (max-width: 600px) {
+  @media screen and (max-width: 670px) {
     .results-wrapper {
       flex: 0 0 100%;
       margin: auto;
     }
+    fieldset {
+      font-size: 1.6rem;
+    }
+  .details-wrapper {
+      font-size: 1.2rem;
+  }
   }
 </style>
 
 <div id="results" class="results-wrapper">
-  <fieldset class="results-in" class:blue={showEncodeForm} class:green={!showEncodeForm}>
+  <fieldset
+    class="results-in"
+    class:blue={showEncodeForm}
+    class:green={!showEncodeForm}>
     <legend>Input</legend>
     <div class="details-wrapper">
       <div class="encoding">Encoding: {inputEncoding}</div>
@@ -130,7 +244,10 @@
       bind:value={inputText}
       bind:this={inputTextArea} />
   </fieldset>
-  <fieldset class="results-out" class:blue={!showEncodeForm} class:green={showEncodeForm}>
+  <fieldset
+    class="results-out"
+    class:blue={!showEncodeForm}
+    class:green={showEncodeForm}>
     <legend>Output</legend>
     <div class="details-wrapper">
       <div class="encoding">Encoding: {outputEncoding}</div>

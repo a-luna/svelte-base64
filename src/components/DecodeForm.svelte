@@ -1,60 +1,73 @@
 <script>
-  import RadioButtons from "./RadioButtons.svelte"
+  import { createEventDispatcher, onMount } from "svelte"
+  import { validateDecodeFormData, b64Decode } from "../base64.js"
   import Field from "svelma/src/components/Field.svelte"
   import Input from "svelma/src/components/Input.svelte"
   import Button from "svelma/src/components/Button.svelte"
-  import { validateDecodeFormData, b64Decode } from "../helpers/base64.js"
-  import { createEventDispatcher, onMount } from "svelte"
+  import RadioButtons from "./RadioButtons.svelte"
+
   const dispatch = createEventDispatcher()
-
   let inputBase64Encoding = "base64url"
-  let encodedInputTextSelector = ".encoded-text input"
+  let errorMessage = ""
+  let inputData = {}
+  let inputType = ""
+  let buttonType = "green"
+  let encodedTextBinding = ""
+  let encodedText = ""
+  let inputIsValid = true
+  let textBox
 
-  onMount(() => {
-    document.querySelector(encodedInputTextSelector)
-    addEventListener("keyup", encodedInputTextChanged)
-  })
+  $: encodedTextChanged(encodedTextBinding)
 
-  function interceptEnterKeyDecode(event) {
+  export const focus = () => textBox.focus()
+  export const reset = () => {
+    encodedTextBinding = ""
+    encodedTextChanged("", true)
+  }
+
+  function handleEncodedTextChanged(event) {
+    encodedTextChanged(event.target.value)
     if (event.keyCode == 13) {
       submitDecodeForm()
-    } else {
-      encodedInputTextChanged(event)
     }
   }
 
-  function encodedInputTextChanged(event) {
-    dispatch("encodedInputTextChanged", { encodedInputText: event.target.value })
+  function encodedTextChanged(newValue, formReset=false) {
+    if (formReset || encodedText != event.target.value) {
+      encodedText = newValue
+      inputIsValid = true
+      toggleInputStyle()
+      dispatch("encodedTextChanged", { value: encodedText })
+    }
+  }
+
+  function inputEncodingChanged(event) {
+    inputBase64Encoding = event.detail.value
+    dispatch("inputEncodingChanged", { value: inputBase64Encoding })
   }
 
   function submitDecodeForm() {
-    let encodedInputText = document.querySelector(encodedInputTextSelector).value
-    let [{ success, error }, inputData] = validateDecodeFormData(
-      encodedInputText,
+    [{ inputIsValid, errorMessage }, inputData] = validateDecodeFormData(
+      encodedText,
       inputBase64Encoding
     )
-    if (success) {
-      let decodedData = b64Decode(inputData)
-      dispatch("decodeFormSubmitted", {
-        success: true,
-        error: "",
-        decodedData: decodedData,
+    if (inputIsValid) {
+      let { chunks, outputText, totalBytesOutput, isASCII } = b64Decode(inputData)
+      dispatch("decodingSucceeded", {
+        outputText: outputText,
+        chunks: chunks,
+        totalBytesOutput: totalBytesOutput,
+        isASCII: isASCII,
       })
     } else {
-      dispatch("decodeFormSubmitted", {
-        success: false,
-        error: error,
-        decodedData: {},
-      })
+      dispatch("errorOccurred", { error: errorMessage })
     }
+    toggleInputStyle()
   }
 
-  function inputBase64EncodingChanged(event) {
-    inputBase64Encoding = event.detail.value
-    dispatch("formOptionChanged", {
-      setting: "inputBase64Encoding",
-      value: inputBase64Encoding,
-    })
+  function toggleInputStyle() {
+    inputType = inputIsValid ? "" : "is-danger"
+    buttonType = inputIsValid ? "green" : "is-danger"
   }
 
   const inputDecodingButtons = {
@@ -83,7 +96,7 @@
   #decode-form {
     display: flex;
     flex-flow: column nowrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
     min-height: 120px;
   }
   #decode-form {
@@ -94,32 +107,22 @@
     flex-flow: row nowrap;
     justify-content: space-evenly;
     align-items: baseline;
-    margin: auto 0 20px 0;
+    margin: 0 0 25px;
   }
   .form-input {
     display: flex;
     flex-flow: row nowrap;
   }
-  @media screen and (max-width: 660px) {
-    .form-input {
-      flex-flow: row wrap;
-      justify-content: flex-end;
-    }
-  }
-  @media screen and (max-width: 600px) {
-    .form-options {
-      margin: auto 0;
-    }
+  @media screen and (max-width: 670px) {
     #decode-form {
       min-height: 110px;
     }
-    .form-input {
-      margin: 5px 0 0 0;
+    .form-options {
+      margin: 0 0 15px 0;
     }
   }
   @media screen and (max-width: 400px) {
     .form-options {
-      flex-flow: row nowrap;
       justify-content: center;
     }
   }
@@ -129,14 +132,25 @@
   <div class="form-options">
     <RadioButtons
       {...inputDecodingButtons}
-      on:selectionChanged={inputBase64EncodingChanged} />
+      on:selectionChanged={inputEncodingChanged} />
   </div>
   <div class="form-input encoded-text">
-    <Field>
-      <Input expanded />
-      <p class="control">
-        <Button type="green" on:click={submitDecodeForm}>Decode</Button>
-      </p>
-    </Field>
+    <div class:is-danger={!inputIsValid} class="field has-addons">
+      <div class="control is-expanded">
+        <input
+          bind:this={textBox}
+          bind:value={encodedTextBinding}
+          on:input={handleEncodedTextChanged}
+          expanded="true"
+          type="text"
+          class="input"
+        >
+        <p class="control">
+        <Button type={buttonType} on:click={submitDecodeForm}>
+          Encode
+        </Button>
+        </p>
+      </div>
+    </div>
   </div>
 </div>

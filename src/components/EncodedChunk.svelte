@@ -1,4 +1,6 @@
 <script>
+  export let chunk = {}
+
   function highlightBase64ValueInLookupTable(event) {
     const selector = `.base64-lookup[data-base="${this.dataset.base}"]`
     const base64Lookup = document.querySelector(selector)
@@ -58,8 +60,6 @@
         .forEach(group => group.classList.add("bit-group"))
     )
   }
-
-  export let chunk = {}
 </script>
 
 <style>
@@ -89,10 +89,10 @@
     justify-content: flex-start;
   }
   .hex-digit:last-child {
-    margin: 0 0 0 18px;
+    margin: 0 0 0 16px;
   }
   .hex-byte {
-    margin: 0 3px;
+    margin: 0 2px;
     display: flex;
     flex-flow: column nowrap;
     justify-content: flex-end;
@@ -106,7 +106,7 @@
     flex-flow: column nowrap;
     justify-content: flex-end;
     min-width: 48px;
-    margin: 0 2px;
+    margin: 0 1px;
   }
   code {
     display: block;

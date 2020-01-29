@@ -22,8 +22,6 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
-    max-width: 180px;
-    margin: 0 10px;
   }
   .radio-buttons {
     display: flex;
@@ -37,7 +35,6 @@
     border-radius: 4px;
     padding: 2px 4px;
     font-size: 1.4rem;
-    width: 100%;
   }
   legend {
     color: #f2f2f2;

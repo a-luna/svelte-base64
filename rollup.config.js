@@ -23,15 +23,15 @@ export default {
   },
   plugins: [
     svelte({
-      preprocess,
       // enable run-time checks when not in production
       dev: !production,
-      hydratable: true,
+      accessors: true,
       // we'll extract any component CSS out into
       // a separate file — better for performance
       css: css => {
         css.write("public/build/bundle.css")
       },
+      preprocess,
     }),
 
     // If you have external dependencies installed from
@@ -41,7 +41,7 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe,
+      dedupe: dedupe,
     }),
     commonjs(),
     sass.render(

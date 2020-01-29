@@ -1,7 +1,8 @@
 {
-  "workbench.colorTheme": "Comfy Monokai(Italic)",
+  "workbench.colorTheme": "Origamid",
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
+  "editor.fontSize": 12,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.detectIndentation": false,
   "git.ignoreLimitWarning": true,

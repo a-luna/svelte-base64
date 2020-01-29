@@ -1,7 +1,43 @@
 <script>
+  import { onMount } from "svelte"
   import EncodedChunk from "./EncodedChunk.svelte"
-  export let isASCII = true
-  export let chunks = []
+  let showEncodeForm
+  let plainTextEncoding
+  let outputIsAscii
+  let chunks = []
+
+  onMount(() => {
+    showEncodeForm = true
+    plainTextEncoding = "ASCII"
+    outputIsAscii = true
+  })
+
+  $: isASCII = showEncodeForm ? plainTextEncoding == "ASCII" : outputIsAscii
+
+  export const update = updatedChunks => chunks = updatedChunks
+
+  export function reset() {
+    plainTextEncoding = "ASCII"
+    outputIsAscii = true
+    chunks = []
+  }
+
+  export function handleFormToggled(encodeFormToggled) {
+    reset()
+    showEncodeForm = encodeFormToggled
+  }
+
+  export function handlePlainTextEncodingChanged(event) {
+    if (showEncodeForm) {
+      plainTextEncoding = event.detail.value
+    }
+  }
+
+  export function handleOutputIsAsciiChanged(isASCII) {
+    if (!showEncodeForm) {
+      outputIsAscii = isASCII
+    }
+  }
 </script>
 
 <style>

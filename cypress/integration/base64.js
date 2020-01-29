@@ -74,7 +74,7 @@ describe("Base64 Visualizer", () => {
     it(`correctly decodes test vectors from RFC 4648 [device: ${device} orientation: ${orientation}]`, () => {
       cy.viewport(device, orientation)
       cy.get(".form-title").contains("Encode Text/Data")
-      cy.get(".form-title-buttons .button:first-child").click()
+      cy.get(".form-title-buttons .button:first-child").click({ delay: 100 })
       cy.get(".form-title").contains("Decode Base64")
       cy.get("#base64EncodingIn1").should("not.be.checked")
       cy.get("#base64EncodingIn2").should("be.checked")
