@@ -16,12 +16,14 @@
   let encodedText = ""
   let inputIsValid = true
   let textBox
+  let inputBase64EncodingButtons
 
   $: encodedTextChanged(encodedTextBinding)
 
   export const focus = () => textBox.focus()
   export const reset = () => {
     encodedTextBinding = ""
+    inputBase64EncodingButtons.reset()
     encodedTextChanged("", true)
   }
 
@@ -43,6 +45,8 @@
 
   function inputEncodingChanged(event) {
     inputBase64Encoding = event.detail.value
+    inputIsValid = true
+    toggleInputStyle()
     dispatch("inputEncodingChanged", { value: inputBase64Encoding })
   }
 
@@ -132,6 +136,7 @@
   <div class="form-options">
     <RadioButtons
       {...inputDecodingButtons}
+      bind:this={inputBase64EncodingButtons}
       on:selectionChanged={inputEncodingChanged} />
   </div>
   <div class="form-input encoded-text">
@@ -147,7 +152,7 @@
         >
         <p class="control">
         <Button type={buttonType} on:click={submitDecodeForm}>
-          Encode
+          Decode
         </Button>
         </p>
       </div>

@@ -141,16 +141,11 @@ code, pre
   padding: 0
   -webkit-font-smoothing: antialiased
 
-.media-content
-  font-size: 16px
-  color: #363636
-
-.modal-card-title
-  font-size: 24px
-
-.modal-card-foot .button
-  font-size: 16px
-  margin: 0
+.notification.is-warning,
+.notification.is-danger
+  background-color: #f92672
+  color: #202020
+  font-weight: 700
 
 .hide-element
   display: none
@@ -236,6 +231,10 @@ textarea[autoresize]
   .input-text .input,
   .encoded-text .input
     font-size: 1.6rem
+
+  .input-text .button,
+  .encoded-text .button
+    width: 80px;
 
   .form-title-buttons .button
     font-size: 1.6rem;

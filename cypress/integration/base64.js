@@ -279,12 +279,10 @@ describe("Base64 Visualizer", () => {
       cy.get(".results-in .encoding").contains("Encoding: Hex")
       cy.get(".results-in .byte-length").contains("Total Bytes: 3")
       cy.get(".input-text button").click()
-      cy.get(".modal").should("be.visible")
-      cy.get(".modal .media-content p").contains(
+      cy.get(".notification").should("be.visible")
+      cy.get(".notification .media-content").contains(
         '"foobar" is not a valid hex string, must contain only hexadecimal digits (a-f, A-F, 0-9)'
       )
-      cy.get(".modal-card-foot button").click()
-      cy.get(".modal").should("not.exist")
     })
   })
 })

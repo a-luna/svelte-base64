@@ -24,7 +24,6 @@
 
 <svelte:head>
   <title>Base64 Visualizer</title>
-  <link rel='stylesheet' href='global.css'>
 </svelte:head>
 
 <main>

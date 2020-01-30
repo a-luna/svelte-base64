@@ -4,6 +4,8 @@
   function highlightBase64ValueInLookupTable(event) {
     const selector = `.base64-lookup[data-base="${this.dataset.base}"]`
     const base64Lookup = document.querySelector(selector)
+    if (!base64Lookup) return
+
     base64Lookup.classList.add("highlight-base64")
     this.classList.add("highlight-base64")
     base64Lookup.addEventListener("mouseleave", removeBase64Highlight)
@@ -13,6 +15,8 @@
   function removeBase64Highlight(event) {
     const selector = ".highlight-base64"
     const matchingBase64 = document.querySelectorAll(selector)
+    if (!matchingBase64) return
+
     matchingBase64.forEach(group => (group.onmouseleave = null))
     matchingBase64.forEach(group => group.classList.remove("highlight-base64"))
   }
@@ -20,6 +24,8 @@
   function highlightAsciiValueInLookupTable(event) {
     const selector = `.ascii-lookup[data-hex-byte="${this.dataset.hexByte}"]`
     const asciiLookup = document.querySelector(selector)
+    if (!asciiLookup) return
+
     asciiLookup.classList.add("highlight-ascii")
     this.classList.add("highlight-ascii")
     asciiLookup.addEventListener("mouseleave", removeAsciiHighlight)
@@ -29,6 +35,8 @@
   function removeAsciiHighlight(event) {
     const selector = ".highlight-ascii"
     const matchingAscii = document.querySelectorAll(selector)
+    if (!matchingAscii) return
+
     matchingAscii.forEach(group => (group.onmouseleave = null))
     matchingAscii.forEach(group => group.classList.remove("highlight-ascii"))
   }
@@ -36,6 +44,8 @@
   function highlightMatchingBitGroups(event) {
     const selector = `*[data-bit-group="${this.dataset.bitGroup}"]`
     const matchingGroups = document.querySelectorAll(selector)
+    if (!matchingGroups) return
+
     matchingGroups.forEach(group => group.classList.remove("bit-group"))
     matchingGroups.forEach(group =>
       group
@@ -51,6 +61,8 @@
   function removeBitGroupHighlight(event) {
     const selector = `*[data-bit-group="${this.dataset.bitGroup}"]`
     const matchingGroups = document.querySelectorAll(selector)
+    if (!matchingGroups) return
+
     matchingGroups.forEach(group => (group.onmouseleave = null))
     matchingGroups.forEach(group => group.classList.remove("highlight-bit-group"))
     matchingGroups.forEach(group => group.classList.add("bit-group"))

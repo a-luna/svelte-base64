@@ -1,6 +1,6 @@
 <script>
   import { onMount } from "svelte"
-  import { alert } from "svelma/src/components/Dialog/index.js"
+  import { create } from "svelma/src/components/Notification/index.js"
   import FormTitle from "./FormTitle.svelte"
   import EncodeForm from "./EncodeForm.svelte"
   import DecodeForm from "./DecodeForm.svelte"
@@ -35,12 +35,12 @@
 
   function plainTextChanged(event) {
     results.handlePlainTextChanged(event)
-    visualization.reset()
+    visualization.handleInputTextChanged()
   }
 
   function encodedTextChanged(event) {
     results.handleEncodedTextChanged(event)
-    visualization.reset()
+    visualization.handleInputTextChanged()
   }
 
   function plainTextEncodingChanged(event) {
@@ -56,6 +56,7 @@
   function inputBase64EncodingChanged(event) {
     results.handleInputBase64EncodingChanged(event)
     lookuptables.handleInputBase64EncodingChanged(event)
+    visualization.handleInputBase64EncodingChanged()
   }
 
   function encodingSucceeded(event) {
@@ -74,17 +75,20 @@
   }
 
   function errorOccurred(event) {
-    alert({
+    create({
       message: event.detail.error,
-      title: "Error!",
-      type: "is-danger",
-    }).then(() => {
-      if (showEncodeForm) {
-        encodeForm.focus()
-      } else {
-        decodeForm.focus()
-      }
+      type: "is-warning",
+      position: "is-top",
+      duration: 3500,
+      icon: true,
+      showClose: false
     })
+    if (showEncodeForm) {
+      encodeForm.focus()
+    }
+    else {
+      decodeForm.focus()
+    }
   }
 </script>
 

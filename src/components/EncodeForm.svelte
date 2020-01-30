@@ -17,12 +17,16 @@
   let plainText = ""
   let inputIsValid = true
   let textBox
+  let plainTextEncodingButtons
+  let outputBase64EncodingButtons
 
   $: plainTextChanged(plainTextBinding)
 
   export const focus = () => textBox.focus()
   export const reset = () => {
     plainTextBinding = ""
+    plainTextEncodingButtons.reset()
+    outputBase64EncodingButtons.reset()
     plainTextChanged("", true)
   }
 
@@ -44,11 +48,15 @@
 
   function plainTextEncodingChanged(event) {
     plainTextEncoding = event.detail.value
+    inputIsValid = true
+    toggleInputStyle()
     dispatch("plainTextEncodingChanged", { value: plainTextEncoding })
   }
 
   function outputEncodingChanged(event) {
     outputBase64Encoding = event.detail.value
+    inputIsValid = true
+    toggleInputStyle()
     dispatch("outputEncodingChanged", { value: outputBase64Encoding })
   }
 
@@ -151,9 +159,11 @@
   <div class="form-options">
     <RadioButtons
       {...inputEncodingButtons}
+      bind:this={plainTextEncodingButtons}
       on:selectionChanged={plainTextEncodingChanged} />
     <RadioButtons
       {...outputEncodingButtons}
+      bind:this={outputBase64EncodingButtons}
       on:selectionChanged={outputEncodingChanged} />
   </div>
   <div class="form-input input-text">

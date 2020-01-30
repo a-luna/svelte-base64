@@ -4,9 +4,17 @@
   export let groupId = ""
   export let groupName = ""
   export let buttons = []
+  let instances = []
   import { createEventDispatcher } from "svelte"
-
   const dispatch = createEventDispatcher()
+
+  export function reset() {
+    buttons.forEach(button => {
+      const buttonInstance = getButtonInstance(button.id)
+      buttonInstance.checked = button.checked
+    })
+  }
+
   function raiseSelectionChanged(event) {
     dispatch("selectionChanged", {
       groupId: groupId,
@@ -14,6 +22,16 @@
       selectionId: event.target.id,
       value: event.target.value,
     })
+  }
+
+  function getButtonInstance(buttonId) {
+    let selectedButton
+    instances.forEach(button => {
+      if (button.id == buttonId) {
+        selectedButton = button
+      }
+    })
+    return selectedButton
   }
 </script>
 
@@ -98,7 +116,7 @@
   <fieldset name={groupName} {form}>
     <legend>{title}</legend>
     <div class="radio-buttons">
-      {#each buttons as button}
+      {#each buttons as button, i}
         <div class="button-wrapper">
           <input
             type="radio"
@@ -106,6 +124,7 @@
             name={groupName}
             value={button.value}
             checked={button.checked}
+            bind:this={instances[i]}
             on:change={raiseSelectionChanged} />
           <label for={button.id}>{button.label}</label>
         </div>

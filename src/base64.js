@@ -23,20 +23,18 @@ const BIN_TO_HEX = {
 export function getAsciiPrintableMap() {
   let asciiMap = []
   for (let i = 32; i < 127; i++) {
-    let byteString = i.toString(2)
-    const padLength = 8 - byteString.length
-    byteString = `${"0".repeat(padLength)}${byteString}`
-    let word1 = byteString.substring(0, 4)
-    let word2 = byteString.substring(4, 8)
-    let hexWord1 = BIN_TO_HEX[word1]
-    let hexWord2 = BIN_TO_HEX[word2]
-    let hexByteString = `${hexWord1}${hexWord2}`
+    let bin = i.toString(2)
+    const padLength = 8 - bin.length
+    bin = `${"0".repeat(padLength)}${bin}`
+    let binWord1 = bin.substring(0, 4)
+    let binWord2 = bin.substring(4, 8)
+    let hex = `${BIN_TO_HEX[binWord1]}${BIN_TO_HEX[binWord2]}`
     asciiMap.push({
       ascii: String.fromCharCode(i),
-      hex: hexByteString,
-      binWord1: word1,
-      binWord2: word2,
-      bin: byteString,
+      hex: hex,
+      binWord1: binWord1,
+      binWord2: binWord2,
+      bin: bin,
       dec: i,
     })
   }
@@ -291,23 +289,24 @@ export function b64Encode({
 export function validateDecodeFormData(encodedText, base64Encoding) {
   // Preserve the original text value provided by the user
   const originalInputText = encodedText
+
   // Remove padding characters
   encodedText = encodedText.replace(/[=]/g, "")
   let [base64Alphabet, base64AlphabetMap] = getBase64AlphabetMap(base64Encoding)
-  let { success, error } = validateBase64Encoding(
+  let { inputIsValid, errorMessage } = validateBase64Encoding(
     originalInputText,
     encodedText,
     base64Alphabet,
     base64Encoding
   )
-  if (!success) {
-    return [{ success: false, error: error }, {}]
+  if (!inputIsValid) {
+    return [{ inputIsValid: false, errorMessage: errorMessage }, {}]
   }
   let totalChunks = (encodedText.length / 4) | 0
   let lastChunkLength = encodedText.length % 4
   if (lastChunkLength === 1) {
-    error = `"${originalInputText}" is not a valid ${base64Encoding} string.`
-    return [{ success: false, error: error }, {}]
+    errorMessage = `"${originalInputText}" is not a valid ${base64Encoding} string.`
+    return [{ inputIsValid: false, errorMessage: errorMessage }, {}]
   }
   let lastChunkPadded = false
   if (lastChunkLength > 0) {
@@ -325,7 +324,7 @@ export function validateDecodeFormData(encodedText, base64Encoding) {
     lastChunkPadded: lastChunkPadded,
     lastChunkLength: lastChunkLength,
   }
-  return [{ success: true }, inputData]
+  return [{ inputIsValid: true }, inputData]
 
   function getBase64AlphabetMap(base64Encoding) {
     let base64Alphabet = getBase64Alphabet(base64Encoding)
@@ -345,8 +344,8 @@ export function validateDecodeFormData(encodedText, base64Encoding) {
     let onlyValidCharacters = false
     let validFormat = false
     if (inputText.length == 0) {
-      const error = "You must provide a string value to decode, text box is empty."
-      return { success: false, error: error }
+      const errorMessage = "You must provide a string value to decode, text box is empty."
+      return { inputIsValid: false, errorMessage: errorMessage }
     }
     if (base64Encoding === "base64") {
       onlyValidCharacters = /^[0-9A-Za-z+/=]+$/.test(inputText)
@@ -362,14 +361,14 @@ export function validateDecodeFormData(encodedText, base64Encoding) {
       distinct.forEach(char => invalid_str.push(`["${char}", 0x${char.charCodeAt(0)}]`))
       invalid_str = invalid_str.join("\n")
       let pluralMaybe = distinct.length > 1 ? "characters" : "character"
-      const error = `"${inputText}" contains ${distinct.length} invalid ${pluralMaybe}:\n${invalid_str}.`
-      return { success: false, error: error }
+      const errorMessage = `"${inputText}" contains ${distinct.length} invalid ${pluralMaybe}:\n${invalid_str}.`
+      return { inputIsValid: false, errorMessage: errorMessage }
     }
     if (!validFormat) {
-      const error = `"${inputText}" is not a valid ${base64Encoding} string.`
-      return { success: false, error: error }
+      const errorMessage = `"${inputText}" is not a valid ${base64Encoding} string.`
+      return { inputIsValid: false, errorMessage: errorMessage }
     }
-    return { success: true, error: "" }
+    return { inputIsValid: true, errorMessage: "" }
   }
 }
 

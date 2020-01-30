@@ -4,14 +4,15 @@ import resolve from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
 import livereload from "rollup-plugin-livereload"
 import { terser } from "rollup-plugin-terser"
+import copy from "rollup-plugin-copy"
 
 const preprocess = sveltePreprocess({ scss: true })
-const production = !process.env.ROLLUP_WATCH
-const dedupe = importee => importee === "svelte" || importee.startsWith("svelte/")
 const sass = require("node-sass")
 const postcss = require("postcss")
-const cssnano = require("cssnano")({ preset: "default" })
+const autoprefixer = require("autoprefixer")
+const cssnano = require("cssnano")
 const fs = require("fs")
+const production = !process.env.ROLLUP_WATCH
 
 export default {
   input: "src/main.js",
@@ -33,6 +34,14 @@ export default {
       },
       preprocess,
     }),
+    copy({
+      targets: [
+        {
+          src: "node_modules/@fortawesome/fontawesome-free/webfonts",
+          dest: "public",
+        },
+      ],
+    }),
 
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
@@ -41,24 +50,24 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe: dedupe,
+      dedupe: importee => importee === "svelte" || importee.startsWith("svelte/"),
     }),
     commonjs(),
     sass.render(
       {
         file: "./src/style/global.sass",
         indentedSyntax: true,
-        outFile: "public/global.css",
+        outFile: "public/build/global.css",
       },
       function(error, result) {
         if (!error) {
-          postcss([cssnano])
+          postcss([autoprefixer, cssnano({ preset: "default" })])
             .process(result.css, {
-              from: "./static/global.css",
-              to: "public/global.css",
+              from: "public/build/global.css",
+              to: "public/build/global.css",
             })
             .then(result =>
-              fs.writeFile("public/global.css", result.css, function(err) {
+              fs.writeFile("public/build/global.css", result.css, function(err) {
                 if (err) {
                   console.log(err)
                 }

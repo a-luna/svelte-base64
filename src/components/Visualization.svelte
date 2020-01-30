@@ -27,14 +27,26 @@
     showEncodeForm = encodeFormToggled
   }
 
+  export function handleInputTextChanged() {
+    chunks = []
+  }
+
   export function handlePlainTextEncodingChanged(event) {
     if (showEncodeForm) {
+      chunks = []
       plainTextEncoding = event.detail.value
+    }
+  }
+
+  export function handleInputBase64EncodingChanged(event) {
+    if (!showEncodeForm) {
+      chunks = []
     }
   }
 
   export function handleOutputIsAsciiChanged(isASCII) {
     if (!showEncodeForm) {
+      chunks = []
       outputIsAscii = isASCII
     }
   }
