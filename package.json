@@ -1,6 +1,8 @@
 {
   "name": "svelte-base64",
   "version": "1.0.0",
+  "description": "A simple application using svelte 3.0, that encodes/decodes ASCII text or hex strings to/from base64 and provides reactive ui components to help illustrate the encoding process.",
+  "keywords": ["base64", "svelte", "responsive"],
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
@@ -67,7 +69,7 @@
   "lint-staged": {
     "*.js": [
       "prettier --write",
-      "eslint --fix",
+      "eslint --cache --fix",
       "git add"
     ],
     "*.{svelte,html,yml,json,css}": [
