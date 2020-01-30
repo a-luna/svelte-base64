@@ -40,6 +40,10 @@ export default {
           src: "node_modules/@fortawesome/fontawesome-free/webfonts",
           dest: "public",
         },
+        {
+          src: "src/fonts/*",
+          dest: "public/webfonts",
+        },
       ],
     }),
 

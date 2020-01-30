@@ -69,12 +69,10 @@
   "lint-staged": {
     "*.js": [
       "prettier --write",
-      "eslint --cache --fix",
-      "git add"
+      "eslint --fix"
     ],
     "*.{svelte,html,yml,json,css}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   }
 }
