@@ -14,7 +14,7 @@
 
   $: isASCII = showEncodeForm ? plainTextEncoding == "ASCII" : outputIsAscii
 
-  export const update = updatedChunks => chunks = updatedChunks
+  export const update = updatedChunks => (chunks = updatedChunks)
 
   export function reset() {
     plainTextEncoding = "ASCII"
@@ -35,6 +35,12 @@
     if (showEncodeForm) {
       chunks = []
       plainTextEncoding = event.detail.value
+    }
+  }
+
+  export function handleOutputBase64EncodingChanged(event) {
+    if (showEncodeForm) {
+      chunks = []
     }
   }
 

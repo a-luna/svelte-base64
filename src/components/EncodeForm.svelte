@@ -13,31 +13,28 @@
   let inputData = {}
   let inputType = ""
   let buttonType = "blue"
-  let plainTextBinding = ""
   let plainText = ""
   let inputIsValid = true
   let textBox
   let plainTextEncodingButtons
   let outputBase64EncodingButtons
 
-  $: plainTextChanged(plainTextBinding)
-
   export const focus = () => textBox.focus()
   export const reset = () => {
-    plainTextBinding = ""
     plainTextEncodingButtons.reset()
     outputBase64EncodingButtons.reset()
     plainTextChanged("", true)
   }
 
-  function handlePlainTextChanged(event) {
-    plainTextChanged(event.target.value)
+  function handleKeyDown(event) {
+    plainTextChanged(event)
     if (event.keyCode == 13) {
       submitEncodeForm()
     }
   }
 
-  function plainTextChanged(newValue, formReset=false) {
+  function plainTextChanged(event, formReset = false) {
+    let newValue = event.target.value
     if (formReset || plainText != newValue) {
       plainText = newValue
       inputIsValid = true
@@ -61,14 +58,14 @@
   }
 
   function submitEncodeForm() {
-    ([{ inputIsValid, errorMessage }, inputData] = validateEncodeFormData(
+    ;[{ inputIsValid, errorMessage }, inputData] = validateEncodeFormData(
       plainText,
       plainTextEncoding,
       outputBase64Encoding
-    ))
+    )
     if (inputIsValid) {
       let { outputText, chunks } = b64Encode(inputData)
-      dispatch("encodingSucceeded", { outputText: outputText, chunks: chunks, })
+      dispatch("encodingSucceeded", { outputText: outputText, chunks: chunks })
     } else {
       dispatch("errorOccurred", { error: errorMessage })
     }
@@ -171,16 +168,13 @@
       <div class="control is-expanded">
         <input
           bind:this={textBox}
-          bind:value={plainTextBinding}
-          on:input={handlePlainTextChanged}
+          on:input={plainTextChanged}
+          on:keyDown={handleKeyDown}
           expanded="true"
           type="text"
-          class="input"
-        >
+          class="input" />
         <p class="control">
-        <Button type={buttonType} on:click={submitEncodeForm}>
-          Encode
-        </Button>
+          <Button type={buttonType} on:click={submitEncodeForm}>Encode</Button>
         </p>
       </div>
     </div>

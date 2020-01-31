@@ -37,10 +37,6 @@ export default {
     copy({
       targets: [
         {
-          src: "node_modules/@fortawesome/fontawesome-free/webfonts",
-          dest: "public",
-        },
-        {
           src: "src/fonts/*",
           dest: "public/webfonts",
         },

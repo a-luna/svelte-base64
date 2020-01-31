@@ -51,6 +51,7 @@
   function outputBase64EncodingChanged(event) {
     results.handleOutputBase64EncodingChanged(event)
     lookuptables.handleOutputBase64EncodingChanged(event)
+    visualization.handleOutputBase64EncodingChanged()
   }
 
   function inputBase64EncodingChanged(event) {
@@ -81,12 +82,11 @@
       position: "is-top",
       duration: 3500,
       icon: true,
-      showClose: false
+      showClose: false,
     })
     if (showEncodeForm) {
       encodeForm.focus()
-    }
-    else {
+    } else {
       decodeForm.focus()
     }
   }
@@ -123,10 +123,7 @@
 
 <div class="main-form">
   <div class="form-group">
-    <FormTitle
-      on:formToggled={formToggled}
-      on:resetForm={resetForm}
-    />
+    <FormTitle on:formToggled={formToggled} on:resetForm={resetForm} />
     {#if showEncodeForm}
       <EncodeForm
         bind:this={encodeForm}
@@ -134,16 +131,14 @@
         on:plainTextEncodingChanged={plainTextEncodingChanged}
         on:outputEncodingChanged={outputBase64EncodingChanged}
         on:encodingSucceeded={encodingSucceeded}
-        on:errorOccurred={errorOccurred}
-      />
+        on:errorOccurred={errorOccurred} />
     {:else}
       <DecodeForm
         bind:this={decodeForm}
         on:encodedTextChanged={encodedTextChanged}
         on:inputEncodingChanged={inputBase64EncodingChanged}
         on:decodingSucceeded={decodingSucceeded}
-        on:errorOccurred={errorOccurred}
-      />
+        on:errorOccurred={errorOccurred} />
     {/if}
   </div>
   <FormResults bind:this={results} />
