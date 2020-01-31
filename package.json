@@ -1,7 +1,7 @@
 {
   "name": "svelte-base64",
   "version": "1.0.0",
-  "description": "This is a simple application that encodes/decodes ASCII text or hex strings to/from base64 and provides reactive ui components to help illustrate the encoding process.",
+  "description": "This is a simple application that encodes/decodes ASCII text or hex strings to/from base64 and provides reactive UI components to help illustrate the encoding process.",
   "keywords": ["base64", "svelte", "responsive"],
   "scripts": {
     "build": "rollup -c",
