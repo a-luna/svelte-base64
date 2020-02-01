@@ -18,7 +18,7 @@ This is a simple application that encodes/decodes ASCII text or hex strings to/f
 
   - [Svelte 3](https://github.com/sveltejs/svelte) + [Svelma](https://github.com/c0bra/svelma) integrated via [`svelte-preprocess`](https://github.com/kaisermann/svelte-preprocess)
     - Svelma is a set of UI components for Svelte based on the Bulma CSS framework.
-  - [Bulma CSS](https://github.com/jgthms/bulma)/FontAwesome 5 integrated via [`node-sass`](https://github.com/sass/node-sass)
+  - [Bulma](https://github.com/jgthms/bulma)/FontAwesome 5 integrated via [`node-sass`](https://github.com/sass/node-sass)
 
 - ### Rollup & Plugins Config
 
