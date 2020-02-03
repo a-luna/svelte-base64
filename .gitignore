@@ -5,4 +5,4 @@ yarn-error.log
 /__sapper__/
 /lambda/
 .vscode
-public
+public/build/bundle*
