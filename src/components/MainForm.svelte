@@ -34,12 +34,12 @@
   }
 
   function plainTextChanged(event) {
-    results.handlePlainTextChanged(event)
+    results.handlePlainTextChanged(event.detail.value)
     visualization.handleInputTextChanged()
   }
 
   function encodedTextChanged(event) {
-    results.handleEncodedTextChanged(event)
+    results.handleEncodedTextChanged(event.detail.value)
     visualization.handleInputTextChanged()
   }
 
@@ -61,13 +61,15 @@
   }
 
   function encodingSucceeded(event) {
-    let { outputText, chunks } = event.detail
+    let { inputText, outputText, chunks } = event.detail
+    results.handlePlainTextChanged(inputText)
     results.handleOutputEncodedTextChanged(outputText)
     visualization.update(chunks)
   }
 
   function decodingSucceeded(event) {
-    let { outputText, chunks, totalBytesOutput, isASCII } = event.detail
+    let { inputText, outputText, chunks, totalBytesOutput, isASCII } = event.detail
+    results.handleEncodedTextChanged(inputText)
     results.handleOutputDecodedTextChanged(outputText)
     results.handleTotalBytesOutChanged(totalBytesOutput)
     results.handleOutputIsAsciiChanged(isASCII)

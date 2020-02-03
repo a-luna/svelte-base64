@@ -22,19 +22,16 @@
   })
 
   $: totalBytesIn =
-    plainTextEncoding == "ASCII"
-      ? inputText.length
-      : getHexBytes(inputText)
+    plainTextEncoding == "ASCII" ? inputText.length : getHexBytes(inputText)
 
   $: isASCII = showEncodeForm ? plainTextEncoding == "ASCII" : outputIsAscii
   $: inputEncoding = showEncodeForm ? plainTextEncoding : inputBase64Encoding
 
-  $: outputEncoding =
-    showEncodeForm
-      ? outputBase64Encoding
-      : outputIsAscii
-        ? "ASCII"
-        : "Hex"
+  $: outputEncoding = showEncodeForm
+    ? outputBase64Encoding
+    : outputIsAscii
+    ? "ASCII"
+    : "Hex"
 
   export function handleFormToggled(encodeFormToggled) {
     reset()
@@ -51,17 +48,17 @@
     outputIsAscii = true
   }
 
-  export function handlePlainTextChanged(event) {
+  export function handlePlainTextChanged(newValue) {
     clearLastResult()
     if (showEncodeForm) {
-      inputText = event.detail.value
+      inputText = newValue
     }
   }
 
-  export function handleEncodedTextChanged(event) {
+  export function handleEncodedTextChanged(newValue) {
     clearLastResult()
     if (!showEncodeForm) {
-      inputText = event.detail.value
+      inputText = newValue
     }
   }
 
@@ -98,8 +95,8 @@
     }
   }
 
-  export const handleTotalBytesOutChanged =
-    totalBytesDecodedOut => totalBytesOut = totalBytesDecodedOut
+  export const handleTotalBytesOutChanged = totalBytesDecodedOut =>
+    (totalBytesOut = totalBytesDecodedOut)
 
   export function handleOutputIsAsciiChanged(isASCII) {
     if (!showEncodeForm) {
@@ -218,17 +215,14 @@
     fieldset {
       font-size: 1.6rem;
     }
-  .details-wrapper {
+    .details-wrapper {
       font-size: 1.2rem;
-  }
+    }
   }
 </style>
 
 <div id="results" class="results-wrapper">
-  <fieldset
-    class="results-in"
-    class:blue={showEncodeForm}
-    class:green={!showEncodeForm}>
+  <fieldset class="results-in" class:blue={showEncodeForm} class:green={!showEncodeForm}>
     <legend>Input</legend>
     <div class="details-wrapper">
       <div class="encoding">Encoding: {inputEncoding}</div>
@@ -244,10 +238,7 @@
       bind:value={inputText}
       bind:this={inputTextArea} />
   </fieldset>
-  <fieldset
-    class="results-out"
-    class:blue={!showEncodeForm}
-    class:green={showEncodeForm}>
+  <fieldset class="results-out" class:blue={!showEncodeForm} class:green={showEncodeForm}>
     <legend>Output</legend>
     <div class="details-wrapper">
       <div class="encoding">Encoding: {outputEncoding}</div>

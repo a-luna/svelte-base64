@@ -19,9 +19,10 @@
 
   export const focus = () => inputTextBox.focus()
   export const reset = () => {
-    inputText = ""
+    inputText = inputTextBox.value
     inputIsValid = true
     inputEncodingOptions.reset()
+    inputEncoding = "base64url"
   }
 
   function interceptEnterKey(event) {
@@ -53,6 +54,7 @@
     if (inputIsValid) {
       let { chunks, outputText, totalBytesOutput, isASCII } = b64Decode(inputData)
       dispatch("decodingSucceeded", {
+        inputText: inputText,
         outputText: outputText,
         chunks: chunks,
         totalBytesOutput: totalBytesOutput,

@@ -21,10 +21,12 @@
 
   export const focus = () => inputTextBox.focus()
   export const reset = () => {
-    inputText = ""
+    inputText = inputTextBox.value
     inputIsValid = true
     inputEncodingOptions.reset()
     outputEncodingOptions.reset()
+    inputEncoding = "ASCII"
+    outputEncoding = "base64url"
   }
 
   function interceptEnterKey(event) {
@@ -62,7 +64,11 @@
     )
     if (inputIsValid) {
       let { outputText, chunks } = b64Encode(inputData)
-      dispatch("encodingSucceeded", { outputText: outputText, chunks: chunks })
+      dispatch("encodingSucceeded", {
+        inputText: inputText,
+        outputText: outputText,
+        chunks: chunks,
+      })
     } else {
       dispatch("errorOccurred", { error: errorMessage })
     }
