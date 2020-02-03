@@ -7,53 +7,48 @@
   import RadioButtons from "./RadioButtons.svelte"
 
   const dispatch = createEventDispatcher()
-  let inputBase64Encoding = "base64url"
-  let errorMessage = ""
+  let inputText = ""
   let inputData = {}
-  let inputType = ""
-  let buttonType = "green"
-  let encodedTextBinding = ""
-  let encodedText = ""
   let inputIsValid = true
-  let textBox
-  let inputBase64EncodingButtons
+  let inputEncoding = "base64url"
+  let errorMessage = ""
+  let inputTextBox
+  let inputEncodingOptions
 
-  $: encodedTextChanged(encodedTextBinding)
+  $: buttonType = inputIsValid ? "green" : "is-danger"
 
-  export const focus = () => textBox.focus()
+  export const focus = () => inputTextBox.focus()
   export const reset = () => {
-    encodedTextBinding = ""
-    inputBase64EncodingButtons.reset()
-    encodedTextChanged("", true)
+    inputText = ""
+    inputIsValid = true
+    inputEncodingOptions.reset()
   }
 
-  function handleEncodedTextChanged(event) {
-    encodedTextChanged(event.target.value)
-    if (event.keyCode == 13) {
-      submitDecodeForm()
+  function interceptEnterKey(event) {
+    if (event.keyCode == 13 && event.target == inputTextBox) {
+      submitForm()
     }
   }
 
-  function encodedTextChanged(newValue, formReset=false) {
-    if (formReset || encodedText != event.target.value) {
-      encodedText = newValue
+  function inputTextChanged(event) {
+    const newValue = event.target.value
+    if (inputText != newValue) {
+      inputText = newValue
       inputIsValid = true
-      toggleInputStyle()
-      dispatch("encodedTextChanged", { value: encodedText })
+      dispatch("inputTextChanged", { value: inputText })
     }
   }
 
   function inputEncodingChanged(event) {
-    inputBase64Encoding = event.detail.value
+    inputEncoding = event.detail.value
     inputIsValid = true
-    toggleInputStyle()
-    dispatch("inputEncodingChanged", { value: inputBase64Encoding })
+    dispatch("inputEncodingChanged", { value: inputEncoding })
   }
 
-  function submitDecodeForm() {
-    [{ inputIsValid, errorMessage }, inputData] = validateDecodeFormData(
-      encodedText,
-      inputBase64Encoding
+  function submitForm() {
+    ;[{ inputIsValid, errorMessage }, inputData] = validateDecodeFormData(
+      inputText,
+      inputEncoding
     )
     if (inputIsValid) {
       let { chunks, outputText, totalBytesOutput, isASCII } = b64Decode(inputData)
@@ -66,15 +61,9 @@
     } else {
       dispatch("errorOccurred", { error: errorMessage })
     }
-    toggleInputStyle()
   }
 
-  function toggleInputStyle() {
-    inputType = inputIsValid ? "" : "is-danger"
-    buttonType = inputIsValid ? "green" : "is-danger"
-  }
-
-  const inputDecodingButtons = {
+  const inputDecodingButtonDefs = {
     title: "Input Encoding",
     form: "decode-form",
     groupId: "input-base64-encoding",
@@ -132,28 +121,26 @@
   }
 </style>
 
+<svelte:window on:keydown={interceptEnterKey} />
+
 <div id="decode-form" class="form-wrapper">
   <div class="form-options">
     <RadioButtons
-      {...inputDecodingButtons}
-      bind:this={inputBase64EncodingButtons}
+      {...inputDecodingButtonDefs}
+      bind:this={inputEncodingOptions}
       on:selectionChanged={inputEncodingChanged} />
   </div>
   <div class="form-input encoded-text">
     <div class:is-danger={!inputIsValid} class="field has-addons">
       <div class="control is-expanded">
         <input
-          bind:this={textBox}
-          bind:value={encodedTextBinding}
-          on:input={handleEncodedTextChanged}
+          bind:this={inputTextBox}
+          on:input={inputTextChanged}
           expanded="true"
           type="text"
-          class="input"
-        >
+          class="input" />
         <p class="control">
-        <Button type={buttonType} on:click={submitDecodeForm}>
-          Decode
-        </Button>
+          <Button type={buttonType} on:click={submitForm}>Decode</Button>
         </p>
       </div>
     </div>

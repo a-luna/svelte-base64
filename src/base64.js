@@ -202,7 +202,7 @@ export function b64Encode({
     chunks: processFinalResults(encodedChunks),
     inputEncoding: inputEncoding,
     outputEncoding: base64Encoding,
-    isASCII: inputEncoding === "ASCII",
+    isASCII: validateAsciiEncoding(inputBytes),
     outputText: encodedBase64,
   }
 
@@ -284,6 +284,10 @@ export function b64Encode({
     }
     return encodedChunk
   }
+}
+
+function validateAsciiEncoding(byteArray) {
+  return byteArray.every(byte => byte > 31 && byte < 127)
 }
 
 export function validateDecodeFormData(encodedText, base64Encoding) {
@@ -546,15 +550,6 @@ export function b64Decode({
       totalBytesOutput: decodedBytes.length,
     }
     return finalResults
-  }
-
-  function validateAsciiEncoding(byteArray) {
-    let ascii = []
-    for (var i = 32; i < 127; i++) {
-      ascii.push(i)
-    }
-    let invalid = byteArray.filter(byte => !ascii.includes(byte))
-    return invalid.length == 0
   }
 }
 

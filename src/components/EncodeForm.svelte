@@ -7,61 +7,58 @@
   import RadioButtons from "./RadioButtons.svelte"
 
   const dispatch = createEventDispatcher()
-  let plainTextEncoding = "ASCII"
-  let outputBase64Encoding = "base64url"
-  let errorMessage = ""
+  let inputText = ""
   let inputData = {}
-  let inputType = ""
-  let buttonType = "blue"
-  let plainText = ""
   let inputIsValid = true
-  let textBox
-  let plainTextEncodingButtons
-  let outputBase64EncodingButtons
+  let inputEncoding = "ASCII"
+  let outputEncoding = "base64url"
+  let errorMessage = ""
+  let inputTextBox
+  let inputEncodingOptions
+  let outputEncodingOptions
 
-  export const focus = () => textBox.focus()
+  $: buttonType = inputIsValid ? "blue" : "is-danger"
+
+  export const focus = () => inputTextBox.focus()
   export const reset = () => {
-    plainTextEncodingButtons.reset()
-    outputBase64EncodingButtons.reset()
-    plainTextChanged("", true)
-  }
-
-  function handleKeyDown(event) {
-    plainTextChanged(event)
-    if (event.keyCode == 13) {
-      submitEncodeForm()
-    }
-  }
-
-  function plainTextChanged(event, formReset = false) {
-    let newValue = event.target.value
-    if (formReset || plainText != newValue) {
-      plainText = newValue
-      inputIsValid = true
-      toggleInputStyle()
-      dispatch("plainTextChanged", { value: plainText })
-    }
-  }
-
-  function plainTextEncodingChanged(event) {
-    plainTextEncoding = event.detail.value
+    inputText = ""
     inputIsValid = true
-    toggleInputStyle()
-    dispatch("plainTextEncodingChanged", { value: plainTextEncoding })
+    inputEncodingOptions.reset()
+    outputEncodingOptions.reset()
+  }
+
+  function interceptEnterKey(event) {
+    if (event.keyCode == 13 && event.target == inputTextBox) {
+      submitForm()
+    }
+  }
+
+  function inputTextChanged(event) {
+    const newValue = event.target.value
+    if (inputText != newValue) {
+      inputText = newValue
+      inputIsValid = true
+      dispatch("inputTextChanged", { value: inputText })
+    }
+  }
+
+  function inputEncodingChanged(event) {
+    inputEncoding = event.detail.value
+    inputIsValid = true
+    dispatch("inputEncodingChanged", { value: inputEncoding })
   }
 
   function outputEncodingChanged(event) {
-    outputBase64Encoding = event.detail.value
+    outputEncoding = event.detail.value
     inputIsValid = true
-    toggleInputStyle()
-    dispatch("outputEncodingChanged", { value: outputBase64Encoding })
+    dispatch("outputEncodingChanged", { value: outputEncoding })
   }
 
-  function submitEncodeForm() {
+  function submitForm() {
     ;[{ inputIsValid, errorMessage }, inputData] = validateEncodeFormData(
-      plainText,
-      plainTextEncoding,
-      outputBase64Encoding
+      inputText,
+      inputEncoding,
+      outputEncoding
     )
     if (inputIsValid) {
       let { outputText, chunks } = b64Encode(inputData)
@@ -69,15 +66,9 @@
     } else {
       dispatch("errorOccurred", { error: errorMessage })
     }
-    toggleInputStyle()
   }
 
-  function toggleInputStyle() {
-    inputType = inputIsValid ? "" : "is-danger"
-    buttonType = inputIsValid ? "blue" : "is-danger"
-  }
-
-  const inputEncodingButtons = {
+  const inputEncodingOptionDefs = {
     title: "Input Encoding",
     form: "encode-form",
     groupId: "input-encoding",
@@ -98,7 +89,7 @@
     ],
   }
 
-  const outputEncodingButtons = {
+  const outputEncodingOptionDefs = {
     title: "Output Encoding",
     form: "encode-form",
     groupId: "output-base64-encoding",
@@ -152,29 +143,30 @@
   }
 </style>
 
+<svelte:window on:keydown={interceptEnterKey} />
+
 <div id="encode-form" class="form-wrapper">
   <div class="form-options">
     <RadioButtons
-      {...inputEncodingButtons}
-      bind:this={plainTextEncodingButtons}
-      on:selectionChanged={plainTextEncodingChanged} />
+      {...inputEncodingOptionDefs}
+      bind:this={inputEncodingOptions}
+      on:selectionChanged={inputEncodingChanged} />
     <RadioButtons
-      {...outputEncodingButtons}
-      bind:this={outputBase64EncodingButtons}
+      {...outputEncodingOptionDefs}
+      bind:this={outputEncodingOptions}
       on:selectionChanged={outputEncodingChanged} />
   </div>
   <div class="form-input input-text">
     <div class:is-danger={!inputIsValid} class="field has-addons">
       <div class="control is-expanded">
         <input
-          bind:this={textBox}
-          on:input={plainTextChanged}
-          on:keyDown={handleKeyDown}
+          bind:this={inputTextBox}
+          on:input={inputTextChanged}
           expanded="true"
           type="text"
           class="input" />
         <p class="control">
-          <Button type={buttonType} on:click={submitEncodeForm}>Encode</Button>
+          <Button type={buttonType} on:click={submitForm}>Encode</Button>
         </p>
       </div>
     </div>

@@ -127,15 +127,15 @@
     {#if showEncodeForm}
       <EncodeForm
         bind:this={encodeForm}
-        on:plainTextChanged={plainTextChanged}
-        on:plainTextEncodingChanged={plainTextEncodingChanged}
+        on:inputTextChanged={plainTextChanged}
+        on:inputEncodingChanged={plainTextEncodingChanged}
         on:outputEncodingChanged={outputBase64EncodingChanged}
         on:encodingSucceeded={encodingSucceeded}
         on:errorOccurred={errorOccurred} />
     {:else}
       <DecodeForm
         bind:this={decodeForm}
-        on:encodedTextChanged={encodedTextChanged}
+        on:inputTextChanged={encodedTextChanged}
         on:inputEncodingChanged={inputBase64EncodingChanged}
         on:decodingSucceeded={decodingSucceeded}
         on:errorOccurred={errorOccurred} />
