@@ -1,9 +1,9 @@
 const screenSettings = [
-  { device: "ipad-2", orientation: "landscape" },
+  { device: "ipad-mini", orientation: "portrait" },
   { device: "iphone-xr", orientation: "portrait" },
   { device: "iphone-5", orientation: "landscape" },
-  { device: "macbook-13", orientation: "portrait" },
-  { device: "samsung-note9", orientation: "landscape" },
+  { device: "macbook-13", orientation: "landscape" },
+  { device: "samsung-note9", orientation: "portrait" },
 ]
 
 describe("Base64 Visualizer", () => {
