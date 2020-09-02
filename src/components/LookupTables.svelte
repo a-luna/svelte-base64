@@ -3,27 +3,27 @@
   import { getAsciiPrintableMap, getBase64Map } from "../base64.js"
 
   let showEncodeForm
+  let plainTextEncoding
   let outputBase64Encoding
   let inputBase64Encoding
+  let outputIsAscii
   const asciiMapChunked = getAsciiPrintableMap()
 
   onMount(() => {
     showEncodeForm = true
+    plainTextEncoding = "ASCII"
     outputBase64Encoding = "base64url"
     inputBase64Encoding = "base64url"
+    outputIsAscii = true
   })
 
-  $: base64Encoding =
-    showEncodeForm
-      ? outputBase64Encoding
-      : inputBase64Encoding
+  $: showASCII = showEncodeForm ? plainTextEncoding == "ASCII" : outputIsAscii
+
+  $: base64Encoding = showEncodeForm ? outputBase64Encoding : inputBase64Encoding
 
   $: base64MapChunked = getBase64Map(base64Encoding)
 
-  $: b64AlphabetDetail =
-    base64Encoding == "base64"
-      ? "Standard"
-      : "URL and Filename safe"
+  $: b64AlphabetDetail = base64Encoding == "base64" ? "Standard" : "URL and Filename safe"
 
   export function handleFormToggled(encodeFormToggled) {
     reset()
@@ -35,6 +35,12 @@
     inputBase64Encoding = "base64url"
   }
 
+  export function handlePlainTextEncodingChanged(event) {
+    if (showEncodeForm) {
+      plainTextEncoding = event.detail.value
+    }
+  }
+
   export function handleOutputBase64EncodingChanged(event) {
     if (showEncodeForm) {
       outputBase64Encoding = event.detail.value
@@ -44,6 +50,12 @@
   export function handleInputBase64EncodingChanged(event) {
     if (!showEncodeForm) {
       inputBase64Encoding = event.detail.value
+    }
+  }
+
+  export function handleOutputIsAsciiChanged(isASCII) {
+    if (!showEncodeForm) {
+      outputIsAscii = isASCII
     }
   }
 </script>
@@ -134,34 +146,35 @@
 </style>
 
 <div class="lookup-tables">
-  <div class="table-wrapper">
-    <h2>ASCII Map (Printable Characters)</h2>
-    <div class="ascii-lookup-table">
-      {#each asciiMapChunked as asciiMap}
-        <div class="ascii-lookup-chunk">
-          {#each asciiMap as ascii}
-            <div
-              class="ascii-lookup"
-              data-ascii={ascii.ascii}
-              data-hex-byte={ascii.hex}
-              data-eight-bit={ascii.bin}
-              data-decimal={ascii.dec}>
-              <code>{ascii.ascii}</code>
-              <code>{ascii.hex}</code>
-              <code>{ascii.binWord1} {ascii.binWord2}</code>
-            </div>
-          {/each}
-        </div>
-      {/each}
+  {#if showASCII}
+    <div class="table-wrapper">
+      <h2>ASCII Map (Printable Characters)</h2>
+      <div class="ascii-lookup-table">
+        {#each asciiMapChunked as asciiMap}
+          <div class="ascii-lookup-chunk">
+            {#each asciiMap as ascii}
+              <div
+                class="ascii-lookup"
+                data-ascii={ascii.ascii}
+                data-hex-byte={ascii.hex}
+                data-eight-bit={ascii.bin}
+                data-decimal={ascii.dec}>
+                <code>{ascii.ascii}</code>
+                <code>{ascii.hex}</code>
+                <code>{ascii.binWord1} {ascii.binWord2}</code>
+              </div>
+            {/each}
+          </div>
+        {/each}
+      </div>
     </div>
-  </div>
+  {/if}
   <div class="table-wrapper">
     <h2>Base64 Alphabet ({b64AlphabetDetail})</h2>
     <div
       class="base64-lookup-table"
       class:blue={showEncodeForm}
-      class:green={!showEncodeForm}
-    >
+      class:green={!showEncodeForm}>
       {#each base64MapChunked as base64Map}
         <div class="base64-lookup-chunk">
           {#each base64Map as base64}

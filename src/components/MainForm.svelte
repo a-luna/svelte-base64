@@ -45,6 +45,7 @@
 
   function plainTextEncodingChanged(event) {
     results.handlePlainTextEncodingChanged(event)
+    lookuptables.handlePlainTextEncodingChanged(event)
     visualization.handlePlainTextEncodingChanged(event)
   }
 
@@ -73,6 +74,7 @@
     results.handleOutputDecodedTextChanged(outputText)
     results.handleTotalBytesOutChanged(totalBytesOutput)
     results.handleOutputIsAsciiChanged(isASCII)
+    lookuptables.handleOutputIsAsciiChanged(isASCII)
     visualization.handleOutputIsAsciiChanged(isASCII)
     visualization.update(chunks)
   }
