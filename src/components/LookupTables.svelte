@@ -28,11 +28,17 @@
   export function handleFormToggled(encodeFormToggled) {
     reset()
     showEncodeForm = encodeFormToggled
+    plainTextEncoding = "ASCII"
+    outputBase64Encoding = "base64url"
+    inputBase64Encoding = "base64url"
+    outputIsAscii = true
   }
 
   export function reset() {
+    plainTextEncoding = "ASCII"
     outputBase64Encoding = "base64url"
     inputBase64Encoding = "base64url"
+    outputIsAscii = true
   }
 
   export function handlePlainTextEncodingChanged(event) {
