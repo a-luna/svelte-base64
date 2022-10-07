@@ -63,7 +63,7 @@
     "svelte-preprocess": "^3.9.12"
   },
   "dependencies": {
-    "minimist": "^1.2.5",
+    "minimist": "^1.2.6",
     "sirv-cli": "^0.4.6"
   },
   "husky": {
