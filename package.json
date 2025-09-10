@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "minimist": "^1.2.5",
-    "sirv-cli": "^0.4.6"
+    "sirv-cli": "^3.0.0"
   },
   "husky": {
     "hooks": {
